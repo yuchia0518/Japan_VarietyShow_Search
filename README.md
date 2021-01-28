@@ -4,7 +4,7 @@
 
 The resources are from： https://jshow.tv/
 
-Demo: 
+Demo: (Pyqt5)
 
 ![image](https://github.com/yuchia0518/Japan_VarietyShow_Search/blob/master/result210128.png)
 
