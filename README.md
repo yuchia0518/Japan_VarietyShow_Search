@@ -1,6 +1,6 @@
 # Japan_VarietyShow_Search
  
-## Easy search for variety show in Japan (Still working on it!!)
+## Easy search for Japanese variety show (Still working on it!!)
 
 The resources are from： https://jshow.tv/
 
