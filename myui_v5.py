@@ -48,14 +48,14 @@ class Ui_MainWindow(object):
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
-        self.scrollArea.setGeometry(QtCore.QRect(15, 350, 740, 200))  # left, top, width, height
+        self.scrollArea.setGeometry(QtCore.QRect(35, 340, 700, 230))  # left, top, width, height
         # self.scrollArea.setMinimumSize(QtCore.QSize(0, 1000))
         self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(15, 350, 300, 200))
+        # self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(65, 350, 700, 300))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -72,8 +72,12 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
         self.Vbox = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.groupBox = QtWidgets.QGroupBox(self.groupBox)
+        self.groupBox.setGeometry(QtCore.QRect(400, 50, 300, 80))
+        self.groupBox.setObjectName("groupBox2")
+
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -91,6 +95,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
         self.pushButton.clicked.connect(self.listview)
+
 
     def get_chosenDate_soup(self, date_num, keyword):
 
@@ -110,16 +115,16 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 for div_title in div_titles:
                     video_date_num = date_pattern.search(div_title.getText()).group(0)
                     if keyword in div_title.getText():
-                        print('keyword_pass')
+                        # print('keyword_pass')
                         for div_child in div_title.children:
-                            print('div_child: ' + div_child.getText())
+                            # print('div_child: ' + div_child.getText())
                             if date_pattern.search(div_child.getText()[-6:]) is not None:
-                                print('date pattern pass!')
+                                # print('date pattern pass!')
                                 title_list.append(div_title.getText())
                                 link_list.append(div_title.find_previous_sibling('div').findChild('a')['href'])
-                                print(div_title.getText())
-                                print(div_title.find_previous_sibling('div').findChild('a')['href'])
-                                print(video_date_num)
+                                # print(div_title.getText())
+                                # print(div_title.find_previous_sibling('div').findChild('a')['href'])
+                                # print(video_date_num)
                                 break
                             else:
                                 print('date pattern not pass!!')
@@ -129,11 +134,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             except Exception as e:
                 print(e)
 
-            print(video_date_num)
-            print(date_num)
             if int(video_date_num) >= int(date_num):
                 page += 1
-                print('page: ' + str(page))
+                # print('page: ' + str(page))
             else:
                 break
 
@@ -161,7 +164,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 title_label = QLabel('<a href = ' + link + '>' + video_title + '</a>')
                 cast_label = QLabel(video_cast)
                 content_label = QLabel(video_content)
-                # link_label = QLabel("<a href='http://stackoverflow.com'>stackoverflow</a>")
                 title_label.setOpenExternalLinks(True)
 
                 video_widgets = [title_label, cast_label, content_label]
@@ -170,12 +172,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         except:
             print('somethings wrong')
 
-            # self.Vbox.addWidget(tit)
-            # self.Vbox.addWidget(link_label)
-            # self.Vbox.addWidget(link_label)
-
-            # self.setLayout(self.scrollArea)
-            # print(title)
 
     def clearLayout(self, layout):
         if layout is not None:
@@ -188,14 +184,12 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     self.clearLayout(item.layout())
 
 
+
+
 if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
-    # MainWindow = QtWidgets.QMainWindow()
-    # ui = Ui_MainWindow()
-    # ui.setupUi(MainWindow)
-    # MainWindow.show()
     myWin = MyMainWindow()
     myWin.show()
     sys.exit(app.exec_())
