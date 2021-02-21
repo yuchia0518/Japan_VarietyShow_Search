@@ -17,7 +17,7 @@ dbfile = "J_VarietyShow.db"
 
 class Ui_FavWindow2(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("FavWindow")
         MainWindow.resize(500, 449)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -99,7 +99,6 @@ class Ui_FavWindow2(object):
 
 
 
-        # Ui_MainWindow.setupUi()
 
 
 

@@ -21,10 +21,6 @@ from fav_window_v2 import Ui_FavWindow2
 
 class Ui_MainWindow(object):
 
-
-
-
-
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(770, 600)
@@ -111,6 +107,9 @@ class Ui_MainWindow(object):
         self.ui = Ui_FavWindow2()
         self.ui.setupUi(self.window)
         self.window.show()
+
+
+
 
 
 
