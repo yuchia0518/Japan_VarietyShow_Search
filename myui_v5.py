@@ -11,42 +11,69 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 import re
+
+# from PyQt5.QtWidgets.QGridLayout import setGeometry
 from bs4 import BeautifulSoup
 import requests
 from PyQt5.QtCore import Qt, QSize
+from fav_window_v2 import Ui_FavWindow2
 
 
 class Ui_MainWindow(object):
+
+
+
+
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(770, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox.setGeometry(QtCore.QRect(0, 20, 781, 281))
         self.groupBox.setObjectName("groupBox")
+
         self.calendarWidget = QtWidgets.QCalendarWidget(self.groupBox)
         self.calendarWidget.setGeometry(QtCore.QRect(10, 50, 351, 181))
         self.calendarWidget.setObjectName("calendarWidget")
+
         self.lineEdit = QtWidgets.QLineEdit(self.groupBox)
         self.lineEdit.setGeometry(QtCore.QRect(400, 170, 311, 51))
         font = QtGui.QFont()
-        font.setPointSize(24)
+        font.setPointSize(14)
         self.lineEdit.setFont(font)
         self.lineEdit.setObjectName("lineEdit")
+
         self.pushButton = QtWidgets.QPushButton(self.groupBox)
         self.pushButton.setGeometry(QtCore.QRect(310, 240, 131, 32))
         self.pushButton.setObjectName("pushButton")
+
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setGeometry(QtCore.QRect(310, 310, 131, 32))
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setWordWrap(False)
+        self.label_3.setObjectName("label")
+
+        self.pushButton2 = QtWidgets.QPushButton(self.groupBox)
+        self.pushButton2.setGeometry(QtCore.QRect(500, 80, 131, 32))
+        self.pushButton2.setObjectName("pushButton2")
+        self.pushButton2.clicked.connect(self.openWindow)
+
+
         self.label = QtWidgets.QLabel(self.groupBox)
         self.label.setGeometry(QtCore.QRect(60, 30, 241, 16))
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setWordWrap(False)
         self.label.setObjectName("label")
+
         self.label_2 = QtWidgets.QLabel(self.groupBox)
         self.label_2.setGeometry(QtCore.QRect(500, 140, 101, 16))
         self.label_2.setScaledContents(False)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
+
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
         self.scrollArea.setGeometry(QtCore.QRect(35, 340, 700, 230))  # left, top, width, height
         # self.scrollArea.setMinimumSize(QtCore.QSize(0, 1000))
@@ -54,10 +81,12 @@ class Ui_MainWindow(object):
         self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
+
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
         # self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(65, 350, 700, 300))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 770, 24))
@@ -73,9 +102,17 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.Vbox = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
-        self.groupBox = QtWidgets.QGroupBox(self.groupBox)
-        self.groupBox.setGeometry(QtCore.QRect(400, 50, 300, 80))
-        self.groupBox.setObjectName("groupBox2")
+        # self.groupBox = QtWidgets.QGroupBox(self.groupBox)
+        # self.groupBox.setGeometry(QtCore.QRect(400, 50, 300, 80))
+        # self.groupBox.setObjectName("groupBox2")
+
+    def openWindow(self):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_FavWindow2()
+        self.ui.setupUi(self.window)
+        self.window.show()
+
+
 
 
 
@@ -84,17 +121,27 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.groupBox.setTitle(_translate("MainWindow", "GroupBox"))
         self.lineEdit.setPlaceholderText(_translate("MainWindow", "輸入任何關鍵字"))
+        # self.lineEdit.setText(_translate('MainWindow',self.))
         self.pushButton.setText(_translate("MainWindow", "搜尋"))
         self.label.setText(_translate("MainWindow", "日期搜尋（預設為自選日期至今日）"))
         self.label_2.setText(_translate("MainWindow", "關鍵字搜尋"))
-        self.menu.setTitle(_translate("MainWindow", "綜藝節目搜尋程式"))
+        self.menu.setTitle(_translate("MainWindow", "日本綜藝節目搜尋程式"))
+        self.label_3.setText(_translate("MainWindow", "搜尋結果"))
+
+        self.pushButton2.setText(_translate("MainWindow", "已收藏"))
+
+
 
 
 class MyMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
-        self.pushButton.clicked.connect(self.listview)
+        self.listWidget = QtWidgets.QListWidget()
+        self.pushButton.clicked.connect(self.showContent)
+
+
+
 
 
     def get_chosenDate_soup(self, date_num, keyword):
@@ -142,7 +189,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         return title_list, link_list
 
-    def listview(self):
+    def showContent(self):
         self.clearLayout(self.Vbox)
         datenum = self.calendarWidget.selectedDate().toString("yyMMdd")
         keyword = self.lineEdit.text()
@@ -155,10 +202,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 video_cast = '出演： ' + str(title).split('出演：')[1]
                 video_content = '內容： ' + str(title).split('出演：')[0].split('内容：')[1]
                 video_date = str(title).split('内容：')[0][-6:]
-                # print(video_date)
-                # print(video_title)
-                # print(video_cast)
-                # print(video_content)
 
                 date_label = QLabel(video_date)
                 title_label = QLabel('<a href = ' + link + '>' + video_title + '</a>')
@@ -183,8 +226,38 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     self.clearLayout(item.layout())
 
+    def list_window(self):
+        app = QApplication(sys.argv)
 
 
+        # Resize width and height
+        self.listWidget.resize(300, 120)
+
+        self.listWidget.addItem("Item 1");
+        self.listWidget.addItem("Item 2");
+        self.listWidget.addItem("Item 3");
+        self.listWidget.addItem("Item 4");
+
+        self.listWidget.setWindowTitle('PyQT QListwidget Demo')
+        self.listWidget.itemClicked.connect(self.Clicked)
+
+        self.listWidget.show()
+        sys.exit(app.exec_())
+
+    def showdialog(self):
+        d = QDialog()
+        b1 = QPushButton("ok", d)
+        b1.move(50, 50)
+        d.setWindowTitle("Dialog")
+        d.setWindowModality(Qt.ApplicationModal)
+        # d.exec_()
+
+    def Clicked(self, item):
+        QMessageBox.information(self, "ListWidget", "You clicked: " + item.text())
+
+    def passedKeyword(self,textlist):
+        self.lineEdit.setText('text')
+        self.lineEdit.show()
 
 if __name__ == "__main__":
     import sys
@@ -192,4 +265,5 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     myWin = MyMainWindow()
     myWin.show()
+    # sub_window()
     sys.exit(app.exec_())
