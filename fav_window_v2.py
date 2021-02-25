@@ -11,6 +11,7 @@
 import sqlite3
 
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QApplication
 
 dbfile = "J_VarietyShow.db"
 
@@ -99,18 +100,15 @@ class Ui_FavWindow2(object):
 
 
 
-
-
-
-    def addTableRow(self, table, row_data):
-        row = table.rowCount()
-        table.setRowCount(row + 1)
-        col = 0
-
-        for item in row_data:
-            cell = QtWidgets.QTableWidgetItem(str(item))
-            table.setItem(row, col, cell)
-            col += 1
+    # def addTableRow(self, table, row_data):
+    #     row = table.rowCount()
+    #     table.setRowCount(row + 1)
+    #     col = 0
+    #
+    #     for item in row_data:
+    #         cell = QtWidgets.QTableWidgetItem(str(item))
+    #         table.setItem(row, col, cell)
+    #         col += 1
 
     def add_listItem(self):
         addinput = self.lineEdit.text()
@@ -120,7 +118,7 @@ class Ui_FavWindow2(object):
         conn.commit()
         conn.close()
 
-
+        QApplication.processEvents()
 
 
 
