@@ -20,6 +20,11 @@ from fav_window_v2 import Ui_FavWindow2
 
 
 class Ui_MainWindow(object):
+    #
+    # def __init__(self,message):
+    #
+    #     print('message from '+message)
+
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -107,6 +112,7 @@ class Ui_MainWindow(object):
         self.ui = Ui_FavWindow2()
         self.ui.setupUi(self.window)
         self.window.show()
+        self.close()
 
 
 
@@ -138,6 +144,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.listWidget = QtWidgets.QListWidget()
         self.pushButton.clicked.connect(self.showContent)
+        # print(message)
 
 
 
@@ -226,7 +233,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     self.clearLayout(item.layout())
 
     def list_window(self):
-        app = QApplication(sys.argv)
+        app = QApplication(sys. argv)
 
 
         # Resize width and height
@@ -243,25 +250,23 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.listWidget.show()
         sys.exit(app.exec_())
 
-    def showdialog(self):
-        d = QDialog()
-        b1 = QPushButton("ok", d)
-        b1.move(50, 50)
-        d.setWindowTitle("Dialog")
-        d.setWindowModality(Qt.ApplicationModal)
-        # d.exec_()
 
     def Clicked(self, item):
         QMessageBox.information(self, "ListWidget", "You clicked: " + item.text())
 
-    def passedKeyword(self,textlist):
-        self.lineEdit.setText('text')
-        self.lineEdit.show()
+
+
+    def getData(self, parameter):
+        # print('This is a test.')
+        print(parameter)
+        # self.lineEdit.setText(parameter)
+
 
 if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
+
     myWin = MyMainWindow()
     myWin.show()
     # sub_window()

@@ -13,6 +13,8 @@ import sqlite3
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication
 
+
+
 dbfile = "J_VarietyShow.db"
 
 
@@ -87,28 +89,7 @@ class Ui_FavWindow2(object):
 
         conn.close()
 
-    def passtoMain(self):
-        from myui_v5 import MyMainWindow
-        from myui_v5 import Ui_MainWindow
-        pass_list = []
-        for row in range(0, self.tableWidget.rowCount()):
-            chkstateitem = self.tableWidget.item(row, 0)
-            item = self.tableWidget.item(row, 1)
-            if chkstateitem.checkState() != 0:
-                pass_list.append(item.text())
-                MyMainWindow.passedKeyword()
 
-
-
-    # def addTableRow(self, table, row_data):
-    #     row = table.rowCount()
-    #     table.setRowCount(row + 1)
-    #     col = 0
-    #
-    #     for item in row_data:
-    #         cell = QtWidgets.QTableWidgetItem(str(item))
-    #         table.setItem(row, col, cell)
-    #         col += 1
 
     def add_listItem(self):
         addinput = self.lineEdit.text()
@@ -119,6 +100,42 @@ class Ui_FavWindow2(object):
         conn.close()
 
         QApplication.processEvents()
+
+
+
+
+    def passtoMain(self):
+        from myui_v5 import MyMainWindow
+        from myui_v5 import Ui_MainWindow
+
+        pass_list = []
+        for row in range(0, self.tableWidget.rowCount()):
+            chkstateitem = self.tableWidget.item(row, 0)
+            item = self.tableWidget.item(row, 1)
+            if chkstateitem.checkState() != 0:
+                pass_list.append(item.text())
+                # MyMainWindow.passedKeyword()
+        for s in pass_list:
+            print(s)
+
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self.window)
+        self.window.show()
+        # self.close()
+
+
+
+
+    # def slot1(self):
+    #     data_str = self.lineEdit.text()
+    #     data_str2 = self.lineEdit_2.text()
+    #     # Send signal
+    #     self._signal.emit(data_str, data_str2)
+    #
+    #     self.lineEdit.setText("")
+    #     self.lineEdit_2.setText("")
+    #     self.close()
 
 
 

@@ -98,6 +98,8 @@ class Ui_FavWindow(object):
         self.vbox.addWidget(self.label_item)
 
 
+
+
 if __name__ == "__main__":
     import sys
 
