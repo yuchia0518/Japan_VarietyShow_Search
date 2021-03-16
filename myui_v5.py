@@ -16,7 +16,6 @@ import re
 from bs4 import BeautifulSoup
 import requests
 from PyQt5.QtCore import Qt, QSize
-from fav_window_v2 import Ui_FavWindow2
 
 
 class Ui_MainWindow(object):
@@ -108,6 +107,8 @@ class Ui_MainWindow(object):
         # self.groupBox.setObjectName("groupBox2")
 
     def openWindow(self):
+        from fav_window_v2 import Ui_FavWindow2
+
         self.window = QtWidgets.QMainWindow()
         self.ui = Ui_FavWindow2()
         self.ui.setupUi(self.window)
@@ -260,6 +261,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         # print('This is a test.')
         print(parameter)
         # self.lineEdit.setText(parameter)
+
 
 
 if __name__ == "__main__":

@@ -10,15 +10,18 @@
 
 import sqlite3
 
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QApplication
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import *
+import re
 
-
+from myui_v5 import Ui_MainWindow
 
 dbfile = "J_VarietyShow.db"
 
 
 class Ui_FavWindow2(object):
+
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("FavWindow")
         MainWindow.resize(500, 449)
@@ -102,11 +105,7 @@ class Ui_FavWindow2(object):
         QApplication.processEvents()
 
 
-
-
     def passtoMain(self):
-        from myui_v5 import MyMainWindow
-        from myui_v5 import Ui_MainWindow
 
         pass_list = []
         for row in range(0, self.tableWidget.rowCount()):
@@ -116,35 +115,26 @@ class Ui_FavWindow2(object):
                 pass_list.append(item.text())
                 # MyMainWindow.passedKeyword()
         for s in pass_list:
-            print(s)
+            print('pass：'+ s)
 
         self.window = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
-        self.window.show()
-        # self.close()
+        # self.window.show()
 
 
 
 
-    # def slot1(self):
-    #     data_str = self.lineEdit.text()
-    #     data_str2 = self.lineEdit_2.text()
-    #     # Send signal
-    #     self._signal.emit(data_str, data_str2)
-    #
-    #     self.lineEdit.setText("")
-    #     self.lineEdit_2.setText("")
-    #     self.close()
-
-
-
-
+class MyFavWindow(QMainWindow, Ui_MainWindow):
+    def __init__(self, parent=None):
+        super(MyFavWindow, self).__init__(parent)
+        self.setupUi(self)
 
 if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
+
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_FavWindow2()
     ui.setupUi(MainWindow)
