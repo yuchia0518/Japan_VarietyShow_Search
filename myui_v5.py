@@ -297,9 +297,15 @@ class SecondWindow(QWidget):
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setRowCount(0)
         self.tableWidget.horizontalHeader().setCascadingSectionResizes(False)
-        self.tableWidget.setHorizontalHeaderLabels(['搜尋勾選', '關鍵字'])
+        self.tableWidget.setHorizontalHeaderLabels(['勾選', '關鍵字'])
         self.tableWidget.setSortingEnabled(True)
         layout.addWidget(self.tableWidget)
+
+        self.pushButton_3 = QPushButton()
+        self.pushButton_3.setGeometry(QtCore.QRect(120, 370, 261, 25))
+        self.pushButton_3.setText(_translate("MainWindow", "刪除勾選"))
+        self.pushButton_3.clicked.connect(self.delete_listItem)
+        layout.addWidget(self.pushButton_3)
 
         self.pushButton_2 = QPushButton()
         self.pushButton_2.setGeometry(QtCore.QRect(120, 370, 261, 25))
@@ -326,20 +332,57 @@ class SecondWindow(QWidget):
 
         conn.close()
 
+    def delete_listItem(self):
+        nrows = self.tableWidget.rowCount()
+        del_rows = []
+        for row in range(0,nrows):
+            chk = self.tableWidget.item(row,0)
+            if chk.checkState() != 0 and nrows > 0:
+                del_row = self.tableWidget.item(row,1).row()
+                del_rows.append(del_row)
+                # self.tableWidget.removeRow(row-1)
+                # print('已刪除：' + del_content.text())
+        #實際運行會發現，只有第一列正確被刪除
+        #錯誤的原因是因為第一列被刪除後，該列後方的所有位置也跟著減-1了！
+        #也就是當你只是單純地使用selectedIndexes()取得多選的列來刪除的話，從第2筆開始的指到row，已經不在是當初user選到要刪除的row了！
+
+        del_rows = sorted(set(del_rows),reverse=True) #從後面開始刪除就行了！
+
+        conn = sqlite3.connect(dbfile)
+        for row in del_rows:
+            del_content = self.tableWidget.item(row,1)
+            del_content = del_content.text()
+            self.tableWidget.removeRow(row)
+            print('已刪除：' + del_content)
+
+
+            sql_str = "Delete from Fav where Keyword = ('{}');".format(del_content)
+            print(sql_str)
+            conn.execute(sql_str)
+            conn.commit()
+
+        conn.close()
+
+
+
+
 
     def add_listItem(self):
         addinput = self.lineEdit.text()
         conn = sqlite3.connect(dbfile)
+        datas = conn.execute("select Keyword from Fav;")
         sql_str = "Insert into Fav(Keyword) values('{}');".format(addinput)
         conn.execute(sql_str)
         conn.commit()
-
         print("已新增: "+addinput)
 
         self.tableWidget.setRowCount(0)
 
-        datas = conn.execute("select Keyword from Fav;")
-        for row_num, row_data in enumerate(datas):
+
+
+
+
+        for row_num, row_data in enumerate(datas): #自動建立索引
             self.tableWidget.insertRow(row_num)
             for column_num, data in enumerate(row_data):
                 self.chkBoxItem = QtWidgets.QTableWidgetItem()
