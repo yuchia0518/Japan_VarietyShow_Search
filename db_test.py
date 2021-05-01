@@ -4,7 +4,7 @@ import requests
 import sqlite3
 
 
-def get_chosenDate_soup():
+def get_chosenDate_soup(dateNum):
     page = 1
 
     video_title = ''
@@ -52,8 +52,10 @@ def get_chosenDate_soup():
             # print(videoInfoLists)
         except Exception as e:
             print(e)
-        if page <= 465:
+
+        if int(video_date_num) >= int(dateNum):
             page += 1
+            # print('page: ' + str(page))
         else:
             break
 
@@ -64,26 +66,16 @@ def insertDB(videoInfoLists):
     dbfile = "J_VarietyShow.db"
 
     conn = sqlite3.connect(dbfile)
-
+    print(len(videoInfoLists))
     for v1 in videoInfoLists:
-        for v2 in v1:
-            sql_str = "Insert into Japan_VarietyShow_Table " \
-              "(datenum, title, content, performer,link) " \
-              "values ('{datenum}', '{title}', '{content}','{performer},'{link}');" \
-        .format(datenum=v2[0], title=v2[1], content=v2[2], performer=v2[3], link=v2[4])
-
-        conn.execute(sql_str)
+        conn.execute("Insert into Japan_VarietyShow_Table (datenum, title, content, performer,link) values (?,?,?,?,?)",
+                     (v1[0], v1[1], v1[2], v1[3], v1[4]))
         conn.commit()
 
     conn.close()
 
 
 if __name__ == "__main__":
-    li = get_chosenDate_soup()
-    print("len" + str(li))
-    # videoInfoLists = get_chosenDate_soup()
-    # print(videoInfoLists)
+    li = get_chosenDate_soup(201001)
     insertDB(li)
-    # videoInfo = [['200101','test1','test1','test1'],['200202','test2','test2','test2']]
-    # print(type(videoInfo))
-    # print(videoInfoLists)
+
