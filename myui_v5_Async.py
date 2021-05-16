@@ -12,10 +12,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 import re
 
-# from PyQt5.QtWidgets.QGridLayout import setGeometry
 from bs4 import BeautifulSoup
 import requests
-from PyQt5.QtCore import Qt, QSize
+
+import asyncio
+from aiohttp import ClientSession
 
 
 class Ui_MainWindow(object):
@@ -137,7 +138,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.w = None
         # print(message)
 
-    def get_chosenDate_soup(self, date_num, keyword):
+
+
+    async def get_chosenDate_soup(self, date_num, keyword, session):
 
         page = 1
         title_list = []
@@ -145,34 +148,28 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         while True:
             base_url = 'https://jshow.tv/more-post/page/' + str(page)
-            print(page)
-            response = requests.get(base_url)
-            soup = BeautifulSoup(response.text, 'lxml')
-            div_titles = soup.find_all('div', class_='des')
-            video_date_num = int()
-            date_pattern = re.compile(r'\d\d\d\d\d\d')
-            try:
-                for div_title in div_titles:
-                    video_date_num = date_pattern.search(div_title.getText()).group(0)
-                    if keyword in div_title.getText():
-                        # print('keyword_pass')
-                        for div_child in div_title.children:
-                            # print('div_child: ' + div_child.getText())
-                            if date_pattern.search(div_child.getText()[-6:]) is not None:
-                                # print('date pattern pass!')
-                                title_list.append(div_title.getText())
-                                link_list.append(div_title.find_previous_sibling('div').findChild('a')['href'])
-                                # print(div_title.getText())
-                                # print(div_title.find_previous_sibling('div').findChild('a')['href'])
-                                # print(video_date_num)
-                                break
-                            else:
-                                print('date pattern not pass!!')
+            print("page" + str(page))
+            async with session.get(base_url) as response:
+                html_body = await response.text()
+            # response = requests.get(base_url)
+                soup = BeautifulSoup(html_body, 'lxml')
+                div_titles = soup.find_all('div', class_='des')
+                video_date_num = int()
+                date_pattern = re.compile(r'\d\d\d\d\d\d')
+                try:
+                    for div_title in div_titles:
+                        video_date_num = date_pattern.search(div_title.getText()).group(0)
+                        if keyword in div_title.getText():
+                            for div_child in div_title.children:
+                                if date_pattern.search(div_child.getText()[-6:]) is not None:
+                                    title_list.append(div_title.getText())
+                                    link_list.append(div_title.find_previous_sibling('div').findChild('a')['href'])
+                                    break
+                                else:
+                                    print('date pattern not pass!!')
 
-
-
-            except Exception as e:
-                print(e)
+                except Exception as e:
+                    print(e)
 
             if int(video_date_num) >= int(date_num):
                 page += 1
@@ -182,12 +179,17 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         return title_list, link_list
 
-    def showContent(self):
+    async def showContent(self):
         self.clearLayout(self.Vbox)
         datenum = self.calendarWidget.selectedDate().toString("yyMMdd")
         keywords = self.lineEdit.text()
         keywords = keywords.split('、')
+
+
         for keyword in keywords:
+            async with ClientSession() as session:
+                tasks = [asyncio.create_task(self.get_chosenDate_soup(int(datenum), keyword, session))]
+                await asyncio.create_task(tasks)
             title_list, link_list = self.get_chosenDate_soup(int(datenum), keyword)
             # linkTemplate = '<a href={0}>{1}</a>'
             try:
@@ -219,9 +221,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     widget.deleteLater()
                 else:
                     self.clearLayout(item.layout())
-
-    # def Clicked(self, item):
-    #     QMessageBox.information(self, "ListWidget", "You clicked: " + item.text())
 
     def open_window2(self, checked):
         if self.w is None:
@@ -343,40 +342,27 @@ class SecondWindow(QWidget):
     def add_listItem(self):
         addinput = self.lineEdit.text()
         conn = sqlite3.connect(dbfile)
-        c = conn.cursor()
-        cursor = c.execute("select Keyword from Fav;")
-        print(cursor.fetchall())
+        datas = conn.execute("select Keyword from Fav;")
+        sql_str = "Insert into Fav(Keyword) values('{}');".format(addinput)
+        conn.execute(sql_str)
+        conn.commit()
+        print("已新增: " + addinput)
 
-        for row in cursor:
-            if addinput != row[0]:
-                sql_str = "Insert into Fav(Keyword) values('{}');".format(addinput)
-                conn.execute(sql_str)
-                conn.commit()
-                print("已新增: " + addinput)
-                self.tableWidget.setRowCount(0)
-                conn.close()
-    # if addinput in datas:
-    #     print(addinput + "已存在！")
-    #     self.tableWidget.setRowCount(0)
-    # else:
-    #
+        self.tableWidget.setRowCount(0)
 
-    # for row_num, row_data in enumerate(datas): #自動建立索引
-    #     self.tableWidget.insertRow(row_num)
-    #     for column_num, data in enumerate(row_data):
-    #         self.chkBoxItem = QtWidgets.QTableWidgetItem()
-    #         self.chkBoxItem.setCheckState(QtCore.Qt.Unchecked)
-    #         self.tableWidget.setItem(row_num, column_num, self.chkBoxItem)
-    #         self.tableWidget.setItem(row_num, column_num + 1, QtWidgets.QTableWidgetItem(str(data)))
+        for row_num, row_data in enumerate(datas):  # 自動建立索引
+            self.tableWidget.insertRow(row_num)
+            for column_num, data in enumerate(row_data):
+                self.chkBoxItem = QtWidgets.QTableWidgetItem()
+                self.chkBoxItem.setCheckState(QtCore.Qt.Unchecked)
+                self.tableWidget.setItem(row_num, column_num, self.chkBoxItem)
+                self.tableWidget.setItem(row_num, column_num + 1, QtWidgets.QTableWidgetItem(str(data)))
 
-    # conn.close()
-    # QApplication.processEvents()
-
+        conn.close()
+        # QApplication.processEvents()
 
     def checked_search(self):
-
         pass_list = []
-
         for row in range(0, self.tableWidget.rowCount()):
             chkstateitem = self.tableWidget.item(row, 0)
             item = self.tableWidget.item(row, 1)
