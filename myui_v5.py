@@ -126,7 +126,6 @@ class Ui_MainWindow(object):
 
         self.pushButton2.setText(_translate("MainWindow", "已收藏"))
 
-
 class MyMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MyMainWindow, self).__init__(parent)
@@ -168,8 +167,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                                 break
                             else:
                                 print('date pattern not pass!!')
-
-
 
             except Exception as e:
                 print(e)
@@ -232,7 +229,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
 
 dbfile = "J_VarietyShow.db"
-
 
 class SecondWindow(QWidget):
     def __init__(self):
